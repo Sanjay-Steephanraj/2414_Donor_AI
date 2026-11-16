@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>2414 World - Conversation Tester</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      background: #f4f6f8;
+      color: #1f2937;
+
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .app {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+    .sidebar {
+      width: 300px;
+      background: #111827;
+      color: white;
+
+      display: flex;
+      flex-direction: column;
+
+      padding: 22px 18px;
+    }
+
+    .logo {
+      font-size: 21px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      color: #9ca3af;
+      font-size: 13px;
+      margin-bottom: 25px;
+    }
+
+    .new-chat {
+      border: none;
+      background: #2563eb;
+      color: white;
+
+      padding: 12px 15px;
+      border-radius: 8px;
+
+      cursor: pointer;
+
+      font-size: 14px;
+      font-weight: 600;
+
+      margin-bottom: 25px;
+    }
+
+    .new-chat:hover {
+      background: #1d4ed8;
+    }
+
+    .sidebar-section {
+      margin-top: 5px;
+    }
+
+    .sidebar-title {
+      color: #9ca3af;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .session-box {
+      background: #1f2937;
+      border-radius: 8px;
+      padding: 12px;
+
+      font-size: 12px;
+      word-break: break-all;
+
+      color: #d1d5db;
+    }
+
+    .status {
+      margin-top: auto;
+
+      padding: 10px 12px;
+
+      border-radius: 8px;
+
+      background: #1f2937;
+
+      font-size: 12px;
+
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+
+      border-radius: 50%;
+
+      background: #22c55e;
+    }
+
+    .status-dot.error {
+      background: #ef4444;
+    }
+
+    /* =====================================================
+           MAIN
+        ===================================================== */
+
+    .main {
+      flex: 1;
+
+      display: flex;
+      flex-direction: column;
+
+      min-width: 0;
+    }
+
+    .header {
+      height: 65px;
+
+      background: white;
+
+      border-bottom: 1px solid #e5e7eb;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 25px;
+    }
+
+    .header-title {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .header-subtitle {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+
+    .api-status {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    /* =====================================================
+           CHAT
+        ===================================================== */
+
+    .chat-container {
+      flex: 1;
+
+      overflow-y: auto;
+
+      padding: 30px;
+
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .message-row {
+      display: flex;
+      width: 100%;
+    }
+
+    .message-row.user {
+      justify-content: flex-end;
+    }
+
+    .message-row.bot {
+      justify-content: flex-start;
+    }
+
+    .message {
+      max-width: min(750px, 80%);
+
+      padding: 13px 16px;
+
+      border-radius: 12px;
+
+      font-size: 14px;
+      line-height: 1.55;
+
+      white-space: pre-wrap;
+    }
+
+    .user .message {
+      background: #2563eb;
+      color: white;
+
+      border-bottom-right-radius: 4px;
+    }
+
+    .bot .message {
+      background: white;
+
+      border: 1px solid #e5e7eb;
+
+      border-bottom-left-radius: 4px;
+
+      box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    .message-label {
+      font-size: 10px;
+      color: #9ca3af;
+      margin-bottom: 5px;
+    }
+
+    .user .message-label {
+      text-align: right;
+    }
+
+    /* =====================================================
+           SUGGESTIONS
+        ===================================================== */
+
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+
+      margin-top: 12px;
+    }
+
+    .suggestion {
+      border: 1px solid #2563eb;
+
+      color: #2563eb;
+
+      background: #eff6ff;
+
+      border-radius: 20px;
+
+      padding: 8px 13px;
+
+      font-size: 12px;
+
+      cursor: pointer;
+
+      transition: 0.15s;
+    }
+
+    .suggestion:hover {
+      background: #dbeafe;
+    }
+
+    /* =====================================================
+           MINISTRY CARDS
+        ===================================================== */
+
+    .ministries {
+      display: flex;
+      flex-direction: column;
+
+      gap: 8px;
+
+      margin-top: 12px;
+    }
+
+    .ministry-card {
+      background: #f9fafb;
+
+      border: 1px solid #e5e7eb;
+
+      border-radius: 8px;
+
+      padding: 11px 13px;
+
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+      color: inherit;
+    }
+
+    .ministry-card:hover {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+
+    .ministry-name {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .ministry-code {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 3px;
+    }
+
+    .resources {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .resource-link {
+      color: #1d4ed8;
+      font-size: 12px;
+      text-decoration: none;
+      border: 1px solid #bfdbfe;
+      background: #eff6ff;
+      border-radius: 16px;
+      padding: 7px 10px;
+    }
+
+    .citations {
+      margin-top: 10px;
+      color: #6b7280;
+      font-size: 12px;
+    }
+
+    .citations summary {
+      cursor: pointer;
+    }
+
+    .citations ul {
+      margin: 5px 0 0;
+      padding-left: 18px;
+    }
+
+    /* =====================================================
+           TYPING
+        ===================================================== */
+
+    .typing {
+      display: flex;
+      gap: 4px;
+
+      padding: 4px 0;
+    }
+
+    .typing span {
+      width: 6px;
+      height: 6px;
+
+      background: #9ca3af;
+
+      border-radius: 50%;
+
+      animation: blink 1.2s infinite;
+    }
+
+    .typing span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes blink {
+
+      0%,
+      80%,
+      100% {
+        opacity: 0.3;
+      }
+
+      40% {
+        opacity: 1;
+      }
+    }
+
+    /* =====================================================
+           INPUT
+        ===================================================== */
+
+    .input-area {
+      background: white;
+
+      border-top: 1px solid #e5e7eb;
+
+      padding: 16px 25px 20px;
+    }
+
+    .input-wrapper {
+      max-width: 900px;
+
+      margin: auto;
+
+      display: flex;
+
+      gap: 10px;
+    }
+
+    textarea {
+      flex: 1;
+
+      resize: none;
+
+      min-height: 48px;
+      max-height: 130px;
+
+      border: 1px solid #d1d5db;
+
+      border-radius: 10px;
+
+      padding: 13px 14px;
+
+      font-family: inherit;
+      font-size: 14px;
+
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: #2563eb;
+
+      box-shadow:
+        0 0 0 2px rgba(37, 99, 235, 0.1);
+    }
+
+    .send-button {
+      width: 90px;
+
+      border: none;
+
+      background: #2563eb;
+      color: white;
+
+      border-radius: 10px;
+
+      font-weight: 600;
+
+      cursor: pointer;
+    }
+
+    .send-button:hover {
+      background: #1d4ed8;
+    }
+
+    .send-button:disabled {
+      background: #93c5fd;
+      cursor: not-allowed;
+    }
+
+    /* =====================================================
+           DEBUG PANEL
+        ===================================================== */
+
+    .debug-panel {
+      position: fixed;
+
+      right: 20px;
+      bottom: 95px;
+
+      width: 420px;
+      max-height: 350px;
+
+      background: #111827;
+      color: #d1d5db;
+
+      border-radius: 10px;
+
+      padding: 14px;
+
+      display: none;
+
+      box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.25);
+
+      z-index: 20;
+    }
+
+    .debug-panel.visible {
+      display: block;
+    }
+
+    .debug-header {
+      display: flex;
+      justify-content: space-between;
+
+      margin-bottom: 10px;
+
+      color: white;
+
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .debug-content {
+      overflow: auto;
+
+      max-height: 290px;
+
+      font-family:
+        Consolas,
+        monospace;
+
+      font-size: 11px;
+
+      white-space: pre-wrap;
+    }
+
+    .debug-button {
+      position: fixed;
+
+      right: 20px;
+      bottom: 78px;
+
+      border: none;
+
+      background: #374151;
+      color: white;
+
+      padding: 9px 13px;
+
+      border-radius: 7px;
+
+      cursor: pointer;
+
+      font-size: 12px;
+    }
+
+    /* =====================================================
+           MOBILE
+        ===================================================== */
+
+    @media (max-width: 700px) {
+
+      .sidebar {
+        display: none;
+      }
+
+      .chat-container {
+        padding: 20px 15px;
+      }
+
+      .input-area {
+        padding: 12px;
+      }
+
+      .message {
+        max-width: 90%;
+      }
+
+      .debug-panel {
+        left: 10px;
+        right: 10px;
+        width: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+      <div class="logo">
+        24:14 World
+      </div>
+
+      <div class="subtitle">
+        Stateful Conversation Tester
+      </div>
+
+      <button class="new-chat" onclick="newConversation()">
+        + New Conversation
+      </button>
+
+      <div class="sidebar-section">
+
+        <div class="sidebar-title">
+          Current Session
+        </div>
+
+        <div id="sessionId" class="session-box">
+          Creating session...
+        </div>
+
+      </div>
+
+      <div class="sidebar-section">
+
+        <div class="sidebar-title">
+          API Endpoint
+        </div>
+
+        <div class="session-box">
+          POST /api/chat
+        </div>
+
+      </div>
+
+      <div class="status">
+
+        <div id="statusDot" class="status-dot"></div>
+
+        <span id="statusText">
+          API Connected
+        </span>
+
+      </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main">
+
+      <header class="header">
+
+        <div>
+
+          <div class="header-title">
+            Conversation Playground
+          </div>
+
+          <div class="header-subtitle">
+            Test stateful RAG, ministry lookup and donation flows
+          </div>
+
+        </div>
+
+        <div id="apiStatus" class="api-status">
+          Ready
+        </div>
+
+      </header>
+
+
+      <!-- =================================================
+             CHAT
+        ================================================== -->
+
+      <section id="chat" class="chat-container"></section>
+
+
+      <!-- =================================================
+             INPUT
+        ================================================== -->
+
+      <div class="input-area">
+
+        <div class="input-wrapper">
+
+          <textarea id="messageInput" placeholder="Type your message..." rows="1"
+            onkeydown="handleKeyDown(event)"></textarea>
+
+          <button id="sendButton" class="send-button" onclick="sendMessage()">
+            Send
+          </button>
+
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+
+  <!-- =========================================================
+     DEBUG PANEL
+========================================================== -->
+
+  <button class="debug-button" onclick="toggleDebug()">
+    API Debug
+  </button>
+
+
+  <div id="debugPanel" class="debug-panel">
+
+    <div class="debug-header">
+
+      <span>
+        Last API Response
+      </span>
+
+      <span>
+        JSON
+      </span>
+
+    </div>
+
+    <div id="debugContent" class="debug-content"></div>
+
+  </div>
+
+
+  <script>
+
+    // ========================================================
+    // STATE
+    // ========================================================
+
+    let sessionId = null;
+
+    let isSending = false;
+
+    let lastResponse = null;
+
+
+    // ========================================================
+    // INITIALIZATION
+    // ========================================================
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      () => {
+
+        startConversation();
+
+        document
+          .getElementById("messageInput")
+          .focus();
+
+      }
+    );
+
+
+    // ========================================================
+    // SESSION
+    // ========================================================
+
+    function createSession() {
+
+      sessionId = crypto.randomUUID();
+
+      document
+        .getElementById("sessionId")
+        .textContent = sessionId;
+
+    }
+
+
+    async function startConversation() {
+
+      sessionId = crypto.randomUUID();
+
+      document
+        .getElementById("sessionId")
+        .textContent = sessionId;
+
+      document
+        .getElementById("chat")
+        .innerHTML = "";
+
+      lastResponse = null;
+
+      document
+        .getElementById("debugContent")
+        .textContent = "";
+
+      setStatus(
+        true,
+        "Loading welcome message..."
+      );
+
+      try {
+        const response = await fetch("/api/welcome");
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        addBotMessage(data.message || "Welcome to 24:14 World.", data.suggestions || []);
+        setStatus(true, "API Connected");
+      } catch (error) {
+        addBotMessage("Welcome! The welcome options could not be loaded. You can still type a message.");
+        setStatus(false, "Welcome endpoint unavailable");
+      }
+
+      document
+        .getElementById("messageInput")
+        .focus();
+
+    }
+
+    function newConversation() {
+      startConversation();
+    }
+
+
+    // ========================================================
+    // SEND MESSAGE
+    // ========================================================
+
+    async function sendMessage(
+      customMessage = null
+    ) {
+
+      if (isSending) {
+        return;
+      }
+
+      const input =
+        document.getElementById(
+          "messageInput"
+        );
+
+      const message =
+        customMessage !== null
+          ? customMessage
+          : input.value.trim();
+
+
+      if (!message) {
+        return;
+      }
+
+
+      if (customMessage === null) {
+        input.value = "";
+      }
+
+
+      addUserMessage(message);
+
+      showTyping();
+
+      isSending = true;
+
+      document
+        .getElementById("sendButton")
+        .disabled = true;
+
+      document
+        .getElementById("apiStatus")
+        .textContent = "Sending...";
+
+
+      const startTime = performance.now();
+
+
+      try {
+
+        /*
+         * IMPORTANT:
+         *
+         * This is the exact contract expected
+         * by your FastAPI ChatRequest model.
+         */
+
+        const requestBody = {
+
+          message: message,
+
+          session_id: sessionId
+
+        };
+
+
+        const response = await fetch(
+          "/api/chat",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify(
+              requestBody
+            )
+          }
+        );
+
+
+        const elapsed =
+          Math.round(
+            performance.now()
+            - startTime
+          );
+
+
+        if (!response.ok) {
+
+          const errorText =
+            await response.text();
+
+          throw new Error(
+            `HTTP ${response.status}: ${errorText}`
+          );
+
+        }
+
+
+        const data =
+          await response.json();
+
+
+        lastResponse = data;
+
+
+        updateDebug(data);
+
+
+        /*
+         * The backend should return session_id.
+         *
+         * If it does, always use the backend value.
+         */
+
+        if (data.session_id) {
+
+          sessionId =
+            data.session_id;
+
+          document
+            .getElementById("sessionId")
+            .textContent =
+            sessionId;
+
+        }
+
+
+        hideTyping();
+
+
+        renderBotResponse(data);
+
+
+        document
+          .getElementById("apiStatus")
+          .textContent =
+          `${elapsed} ms`;
+
+        setStatus(
+          true,
+          "API Connected"
+        );
+
+      }
+
+      catch (error) {
+
+        console.error(error);
+
+        hideTyping();
+
+        addBotMessage(
+          "⚠️ API request failed.\n\n"
+          + error.message
+        );
+
+        setStatus(
+          false,
+          "API Error"
+        );
+
+        document
+          .getElementById("apiStatus")
+          .textContent =
+          "Request failed";
+
+      }
+
+      finally {
+
+        isSending = false;
+
+        document
+          .getElementById("sendButton")
+          .disabled = false;
+
+        document
+          .getElementById("messageInput")
+          .focus();
+
+      }
+
+    }
+
+
+    // ========================================================
+    // RENDER BOT RESPONSE
+    // ========================================================
+
+    function renderBotResponse(data) {
+
+      /*
+       * Your bot_response() function may return
+       * slightly different property names depending
+       * on your rag_service.py implementation.
+       *
+       * These fallbacks make the tester tolerant.
+       */
+
+      const answer =
+        data.message
+        || data.answer
+        || data.response
+        || data.content
+        || "";
+
+
+      const suggestions =
+        data.suggestions
+        || data.follow_ups
+        || data.followups
+        || [];
+
+
+      const ministries =
+        data.ministries
+        || [];
+
+      const urls = Array.isArray(data.urls) ? data.urls : [];
+
+      const citations = Array.isArray(data.citations) ? data.citations : [];
+      const links = Array.isArray(data.links) ? data.links : [];
+
+
+      addBotMessage(
+        answer,
+        suggestions,
+        ministries,
+        urls,
+        citations,
+        links
+      );
+
+    }
+
+
+    // ========================================================
+    // USER MESSAGE
+    // ========================================================
+
+    function addUserMessage(message) {
+
+      const chat =
+        document.getElementById(
+          "chat"
+        );
+
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+      row.className =
+        "message-row user";
+
+
+      const wrapper =
+        document.createElement(
+          "div"
+        );
+
+
+      const label =
+        document.createElement(
+          "div"
+        );
+
+      label.className =
+        "message-label";
+
+      label.textContent =
+        "You";
+
+
+      const bubble =
+        document.createElement(
+          "div"
+        );
+
+      bubble.className =
+        "message";
+
+      bubble.textContent =
+        message;
+
+
+      wrapper.appendChild(label);
+
+      wrapper.appendChild(bubble);
+
+      row.appendChild(wrapper);
+
+      chat.appendChild(row);
+
+
+      scrollToBottom();
+
+    }
+
+
+    // ========================================================
+    // BOT MESSAGE
+    // ========================================================
+
+    function addBotMessage(
+      message,
+      suggestions = [],
+      ministries = [],
+      urls = [],
+      citations = [],
+      links = []
+    ) {
+
+      const chat =
+        document.getElementById(
+          "chat"
+        );
+
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+      row.className =
+        "message-row bot";
+
+
+      const wrapper =
+        document.createElement(
+          "div"
+        );
+
+
+      const label =
+        document.createElement(
+          "div"
+        );
+
+      label.className =
+        "message-label";
+
+      label.textContent =
+        "2414 World Assistant";
+
+
+      const bubble =
+        document.createElement(
+          "div"
+        );
+
+      bubble.className =
+        "message";
+
+      bubble.textContent =
+        message;
+
+
+      wrapper.appendChild(label);
+
+      wrapper.appendChild(bubble);
+
+
+      // ----------------------------------------------------
+      // Ministry cards
+      // ----------------------------------------------------
+
+      if (
+        Array.isArray(ministries)
+        && ministries.length > 0
+      ) {
+
+        const ministryContainer =
+          document.createElement(
+            "div"
+          );
+
+        ministryContainer.className =
+          "ministries";
+
+
+        ministries.forEach(
+          ministry => {
+
+            const card =
+              document.createElement(
+                "button"
+              );
+
+            card.className =
+              "ministry-card";
+
+            card.type = "button";
+
+
+            const name =
+              document.createElement(
+                "div"
+              );
+
+            name.className =
+              "ministry-name";
+
+            name.textContent =
+              ministry.name
+              || "Unknown Ministry";
+
+
+            const code =
+              document.createElement(
+                "div"
+              );
+
+            code.className =
+              "ministry-code";
+
+            code.textContent =
+              `Code: ${ministry.code
+              || "N/A"
+              }`;
+
+            card.title = "Ask for details about this ministry";
+
+            card.onclick = () => {
+              const ministryName = ministry.name || "";
+              const ministryCode = ministry.code ? ` (Code: ${ministry.code})` : "";
+              sendMessage(`Tell me about ${ministryName}${ministryCode}`);
+            };
+
+
+            card.appendChild(name);
+
+            card.appendChild(code);
+
+            ministryContainer
+              .appendChild(card);
+
+          }
+        );
+
+
+        wrapper.appendChild(
+          ministryContainer
+        );
+
+      }
+
+
+      // ----------------------------------------------------
+      // Suggestions
+      // ----------------------------------------------------
+
+      if (
+        Array.isArray(suggestions)
+        && suggestions.length > 0
+      ) {
+
+        const suggestionContainer =
+          document.createElement(
+            "div"
+          );
+
+        suggestionContainer.className =
+          "suggestions";
+
+
+        suggestions.slice(0, 5).forEach(
+          suggestion => {
+
+            // API responses are normalized as { label, message } objects.
+            // Continue accepting strings so welcome and legacy responses work.
+            const label = typeof suggestion === "string"
+              ? suggestion
+              : suggestion?.label || suggestion?.message || "";
+
+            const messageToSend = typeof suggestion === "string"
+              ? suggestion
+              : suggestion?.message || suggestion?.label || "";
+
+            if (!label || !messageToSend) return;
+
+            const button =
+              document.createElement(
+                "button"
+              );
+
+            button.className =
+              "suggestion";
+
+            button.textContent = label;
+
+
+            button.onclick =
+              () => {
+
+                suggestionContainer.querySelectorAll("button").forEach(option => {
+                  option.disabled = true;
+                });
+                suggestionContainer.remove();
+
+                sendMessage(
+                  messageToSend
+                );
+
+              };
+
+
+            suggestionContainer
+              .appendChild(button);
+
+          }
+        );
+
+
+        wrapper.appendChild(
+          suggestionContainer
+        );
+
+      }
+
+      // ----------------------------------------------------
+      // Resource links and grounded source titles
+      // ----------------------------------------------------
+
+      const resourcesToRender = Array.isArray(links) && links.length > 0
+        ? links
+        : (Array.isArray(urls) ? urls : []);
+
+      // Ministry list results already provide selectable ministry cards.
+      // Do not also render one giving button for every card; those links
+      // belong on the individual ministry-details response instead.
+      const ministryCodes = new Set(
+        (Array.isArray(ministries) ? ministries : [])
+          .map(ministry => String(ministry?.code || "").trim().toLowerCase())
+          .filter(Boolean)
+      );
+      const visibleResources = resourcesToRender.filter(resource => {
+        if (!ministryCodes.size) return true;
+        const isLinkObject = resource && typeof resource === "object";
+        const url = isLinkObject ? resource.url : resource;
+        const label = isLinkObject ? String(resource.label || "") : "";
+        if (typeof url !== "string") return true;
+        if (/^open giving page for code\b/i.test(label)) return false;
+        try {
+          const code = new URL(url, window.location.href)
+            .searchParams.get("code")?.trim().toLowerCase();
+          return !code || !ministryCodes.has(code);
+        } catch (_) {
+          return true;
+        }
+      });
+
+      if (visibleResources.length > 0) {
+        const resources = document.createElement("div");
+        resources.className = "resources";
+        visibleResources.forEach(resource => {
+          const isLinkObject = resource && typeof resource === "object";
+          const url = isLinkObject ? resource.url : resource;
+          if (typeof url !== "string" || !url.trim()) return;
+          const link = document.createElement("a");
+          link.className = "resource-link";
+          link.href = url;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.textContent = isLinkObject && resource.label
+            ? resource.label
+            : "Open resource ↗";
+          resources.appendChild(link);
+        });
+        if (resources.childElementCount) wrapper.appendChild(resources);
+      }
+
+      if (Array.isArray(citations) && citations.length > 0) {
+        const sourceDetails = document.createElement("details");
+        sourceDetails.className = "citations";
+        const summary = document.createElement("summary");
+        summary.textContent = `${citations.length} grounded source${citations.length === 1 ? "" : "s"}`;
+        const list = document.createElement("ul");
+        citations.forEach(citation => {
+          const item = document.createElement("li");
+          item.textContent = typeof citation === "string" ? citation : citation?.title || "Source";
+          list.appendChild(item);
+        });
+        sourceDetails.append(summary, list);
+        wrapper.appendChild(sourceDetails);
+      }
+
+
+      row.appendChild(wrapper);
+
+      chat.appendChild(row);
+
+
+      scrollToBottom();
+
+    }
+
+
+    // ========================================================
+    // TYPING INDICATOR
+    // ========================================================
+
+    function showTyping() {
+
+      hideTyping();
+
+
+      const chat =
+        document.getElementById(
+          "chat"
+        );
+
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+      row.id =
+        "typingIndicator";
+
+      row.className =
+        "message-row bot";
+
+
+      const message =
+        document.createElement(
+          "div"
+        );
+
+      message.className =
+        "message";
+
+
+      const typing =
+        document.createElement(
+          "div"
+        );
+
+      typing.className =
+        "typing";
+
+
+      for (
+        let i = 0;
+        i < 3;
+        i++
+      ) {
+
+        typing.appendChild(
+          document.createElement(
+            "span"
+          )
+        );
+
+      }
+
+
+      message.appendChild(
+        typing
+      );
+
+      row.appendChild(message);
+
+      chat.appendChild(row);
+
+
+      scrollToBottom();
+
+    }
+
+
+    function hideTyping() {
+
+      const typing =
+        document.getElementById(
+          "typingIndicator"
+        );
+
+      if (typing) {
+        typing.remove();
+      }
+
+    }
+
+
+    // ========================================================
+    // SUGGESTIONS
+    // ========================================================
+
+    function removeSuggestions() {
+
+      document
+        .querySelectorAll(
+          ".suggestions"
+        )
+        .forEach(
+          element =>
+            element.remove()
+        );
+
+    }
+
+
+    // ========================================================
+    // KEYBOARD
+    // ========================================================
+
+    function handleKeyDown(event) {
+
+      if (
+        event.key === "Enter"
+        && !event.shiftKey
+      ) {
+
+        event.preventDefault();
+
+        sendMessage();
+
+      }
+
+    }
+
+
+    // ========================================================
+    // DEBUG
+    // ========================================================
+
+    function updateDebug(data) {
+
+      document
+        .getElementById(
+          "debugContent"
+        )
+        .textContent =
+        JSON.stringify(
+          data,
+          null,
+          2
+        );
+
+    }
+
+
+    function toggleDebug() {
+
+      document
+        .getElementById(
+          "debugPanel"
+        )
+        .classList.toggle(
+          "visible"
+        );
+
+    }
+
+
+    // ========================================================
+    // STATUS
+    // ========================================================
+
+    function setStatus(
+      connected,
+      text
+    ) {
+
+      const dot =
+        document.getElementById(
+          "statusDot"
+        );
+
+      const status =
+        document.getElementById(
+          "statusText"
+        );
+
+
+      status.textContent =
+        text;
+
+
+      if (connected) {
+
+        dot.classList.remove(
+          "error"
+        );
+
+      } else {
+
+        dot.classList.add(
+          "error"
+        );
+
+      }
+
+    }
+
+
+    // ========================================================
+    // SCROLL
+    // ========================================================
+
+    function scrollToBottom() {
+
+      const chat =
+        document.getElementById(
+          "chat"
+        );
+
+
+      setTimeout(
+        () => {
+
+          chat.scrollTop =
+            chat.scrollHeight;
+
+        },
+        50
+      );
+
+    }
+
+  </script>
+
+</body>
+
+</html>

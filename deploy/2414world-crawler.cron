@@ -1,0 +1,4 @@
+# Install with the deployment user's crontab. Default timezone: Asia/Calcutta.
+SHELL=/bin/sh
+CRON_TZ=Asia/Calcutta
+0 2 * * * cd /app && /app/.venv/bin/python /app/uploaders/crawler.py --mode daily >> /var/log/2414world-crawler.log 2>&1

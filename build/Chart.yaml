@@ -1,0 +1,6 @@
+apiVersion: v2
+name: gloo2414apiservice
+description: Python API service for gloo-2414
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
