@@ -1,9 +1,0 @@
-containerImagePullPolicy: Always
-image: 832519233167.dkr.ecr.us-east-1.amazonaws.com/gloo-2414:latest
-
-gloo2414NodeSelector: nickname=tesla
-gloo2414DesiredReplicas: 1
-gloo2414MemoryRequest: 256Mi
-gloo2414CPURequest: 100m
-gloo2414MemoryLimit: 512Mi
-gloo2414CPULimit: 500m
